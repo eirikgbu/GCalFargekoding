@@ -1,0 +1,50 @@
+function ColorEvents() {
+  //Finner dagen idag
+  var today = new Date();
+  //Finner dagen om et år fra nå
+  var nextyear = new Date(new Date().setDate(new Date().getDate() + 366));
+  //Henter alle kalenderne
+  var calendars = CalendarApp.getAllOwnedCalendars();
+
+  //Bestemmer hvilke nøkkelord som skal bli de ulike fargene
+  var colorMappings = {
+    ORANGE: ["Krypto"],
+    GREEN: ["Design", "Deskom", "Design av kommuniserende systemer"],
+    PALE_BLUE: ["morgen", "frokost"],
+    CYAN: ["ExPhil"],
+    YELLOW: ["Seniornett"],
+    MAUVE: ["MobNet"], //Mauve er lilla
+    PALE_GREEN: ["Trening", "NTNUI", "Kamp"],
+    RED: ["eksamen"],
+    BLUE: [],
+    PALE_RED: [],
+    GRAY: []
+  };
+  //går gjennom hver kalender
+  for (var i = 0; i < calendars.length; i++) {
+    var calendar = calendars[i];
+    console.log("Jobber nå med kalender", calendar.getName())
+    var events = calendar.getEvents(today, nextyear);
+    console.log("Fant", events.length, "event i denne kalenderen i det kommende året. Kommer til å ta ca", events.length/7.8.toFixed(0), "sekunder å gå gjennom denne kalenderen")
+
+    //går gjennom hvert event. De første kommer først, og de siste til slutt
+    for (var j = 0; j < events.length; j++) {
+      var e = events[j];
+      var title = e.getTitle();
+      //kaller metoden
+      setColorBasedOnKeywords(e, title.toLowerCase(), colorMappings);
+    }
+  }
+}
+
+function setColorBasedOnKeywords(event, lowerCaseTitle, colorMappings) {
+  // Går gjennom hver farge
+  for (var color in colorMappings) {
+    // Sjekker om tittelen inneholder noen av nøkkelordene knyttet til fargen
+    if (colorMappings[color].some(keyword => lowerCaseTitle.includes(keyword.toLowerCase()))) {
+      // Setter fargen på hendelsen basert på nøkkelordet
+      event.setColor(CalendarApp.EventColor[color]);
+      break;
+    }
+  }
+}
